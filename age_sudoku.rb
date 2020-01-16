@@ -41,15 +41,16 @@ class Sudoku
 
 private
   def entirely_numerical?
-    true
+    @matrix.all? do |row|
+      return false unless row.all? { |n| n.is_a? Integer }
+      row.min > 0 && row.max <= @size && row.uniq.size == @size
+    end
   end
 
   def correct_dimensions?
-    return false unless @size.positive?
-
     root = Math.sqrt(@size)
-    return false unless root.to_i == root
 
+    return false unless @size.positive? && root.to_i == root
     @matrix.all? { |row| row.size == @size }
   end
 end
