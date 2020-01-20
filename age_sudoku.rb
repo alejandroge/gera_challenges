@@ -166,4 +166,16 @@ class SudokuTest < Minitest::Test
 
     assert_equal(false, sudoku.valid?)
   end
+
+  def test_invalid_5
+    sudoku = Sudoku.new([
+      [1,4, 2,3],
+      [3,2, 4,1],
+
+      [4,1, 3,2],
+      1
+    ])
+
+    assert_equal(false, sudoku.valid?)
+  end
 end
