@@ -27,12 +27,12 @@
 # Note: the matrix may include non-integer elements.
 
 require 'minitest/autorun'
-require 'byebug'
 
 class Sudoku
   def initialize(matrix)
     @matrix = matrix
     @size = matrix.size
+    @root = Math.sqrt(@size)
   end
 
   def valid?
@@ -43,41 +43,29 @@ class Sudoku
 
 private
   def correct_dimensions?
-    root = Math.sqrt(@size)
-
-    @size.positive? && (root.to_i == root) &&
-      @matrix.all? { |row| row.size === @size }
+    @size.positive? && (@root.to_i == @root) && @matrix.all? { |row| row.size === @size }
   end
 
   def all_valid_values?
-    @matrix.all? do |row|
-      row.all? { |n| n.is_a?(Integer) && n > 0 && n <= @size }
-    end
+    @matrix.all? { |row| row.all? { |n| n.is_a?(Integer) && n > 0 && n <= @size } }
   end
 
   def rows_are_correct?
-    @matrix.all? do |row|
-      row.uniq.size === @size
-    end
+    @matrix.all? { |row| row.uniq.size === @size }
   end
 
   def columns_are_correct?
-    (0...@size).all? do |index|
-      column = @matrix.map { |row| row[index] }
-      column.uniq.size === @size
-    end
+    (0...@size).all? { |index| @matrix.map { |row| row[index] }.uniq.size === @size }
   end
 
   def inner_squares_are_correct?
-    root = Math.sqrt(@size)
+    (0...@root).all? do |row|
+      (0...@root).all? do |column|
+        r_idx = (row * @root).to_i
 
-    (0...root).all? do |row|
-      (0...root).all? do |column|
-        r_idx = (row * root).to_i
-
-        (r_idx...r_idx + root).each_with_object([]) do |mat_row, numbers|
-          c_idx = (column * root).to_i
-          numbers << @matrix[mat_row][c_idx...c_idx + root]
+        (r_idx...r_idx + @root).each_with_object([]) do |mat_row, numbers|
+          c_idx = (column * @root).to_i
+          numbers << @matrix[mat_row][c_idx...c_idx + @root]
         end.flatten.uniq.size === @size
       end
     end
