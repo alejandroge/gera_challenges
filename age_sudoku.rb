@@ -36,22 +36,51 @@ class Sudoku
   end
 
   def valid?
-    correct_dimensions? && entirely_numerical?
+    correct_dimensions? && all_valid_values? &&
+      rows_are_correct? && columns_are_correct? &&
+      inner_squares_are_correct?
   end
 
 private
-  def entirely_numerical?
-    @matrix.all? do |row|
-      return false unless row.all? { |n| n.is_a? Integer }
-      row.min > 0 && row.max <= @size && row.uniq.size == @size
-    end
-  end
-
   def correct_dimensions?
     root = Math.sqrt(@size)
 
-    return false unless @size.positive? && root.to_i == root
-    @matrix.all? { |row| row.size == @size }
+    @size.positive? && (root.to_i == root) &&
+      @matrix.all? { |row| row.size === @size }
+  end
+
+  def all_valid_values?
+    @matrix.all? do |row|
+      row.all? { |n| n.is_a?(Integer) && n > 0 && n <= @size }
+    end
+  end
+
+  def rows_are_correct?
+    @matrix.all? do |row|
+      row.uniq.size === @size
+    end
+  end
+
+  def columns_are_correct?
+    (0...@size).all? do |index|
+      column = @matrix.map { |row| row[index] }
+      column.uniq.size === @size
+    end
+  end
+
+  def inner_squares_are_correct?
+    root = Math.sqrt(@size)
+
+    (0...root).all? do |row|
+      (0...root).all? do |column|
+        r_idx = (row * root).to_i
+
+        (r_idx...r_idx + root).each_with_object([]) do |mat_row, numbers|
+          c_idx = (column * root).to_i
+          numbers << @matrix[mat_row][c_idx...c_idx + root]
+        end.flatten.uniq.size === @size
+      end
+    end
   end
 end
 
@@ -109,6 +138,42 @@ class SudokuTest < Minitest::Test
       [1,2,3,4],
       [1,2,3,4],
       [1]
+    ])
+
+    assert_equal(false, sudoku.valid?)
+  end
+
+  def test_invalid_3
+    sudoku = Sudoku.new([
+      [1,2,3, 4,5,6, 7,8,9],
+      [1,2,3, 4,5,6, 7,8,9],
+      [1,2,3, 4,5,6, 7,8,9],
+
+      [1,2,3, 4,5,6, 7,8,9],
+      [1,2,3, 4,5,6, 7,8,9],
+      [1,2,3, 4,5,6, 7,8,9],
+
+      [1,2,3, 4,5,6, 7,8,9],
+      [1,2,3, 4,5,6, 7,8,9],
+      [1,2,3, 4,5,6, 7,8,9]
+    ])
+
+    assert_equal(false, sudoku.valid?)
+  end
+
+  def test_invalid_4
+    sudoku = Sudoku.new([
+      [7,8,4, 1,5,9, 3,2,6],
+      [5,3,9, 6,7,2, 8,4,1],
+      [6,1,2, 4,3,8, 7,5,9],
+
+      [9,2,8, 7,1,5, 4,6,3],
+      [3,5,7, 8,4,6, 1,9,2],
+      [8,7,6, 3,9,4, 2,1,5],
+
+      [4,6,1, 9,2,3, 5,8,7],
+      [2,4,3, 5,6,1, 9,7,8],
+      [1,9,5, 2,8,7, 6,3,4]
     ])
 
     assert_equal(false, sudoku.valid?)
