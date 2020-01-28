@@ -13,8 +13,8 @@ end
 
 def generator(digits_number, digits_sum)
   Enumerator.new do |enum|
-    i = initialized_int(1, digits_number) 
-    max = initialized_int(9, digits_number) 
+    i = initialized_int(1, digits_number)
+    max = initialized_int(9, digits_number)
 
     while (i <= max)
       while (i % 10) < 9
@@ -29,7 +29,7 @@ end
 
 def initialized_int(value, digits)
   base_value = (10**digits - 1) / 9 # basing all calculations on 1s numbers
-  return base_value if value === 1 
+  return base_value if value === 1
   base_value * value
 end
 
