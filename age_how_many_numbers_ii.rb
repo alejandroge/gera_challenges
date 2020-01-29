@@ -31,22 +31,24 @@
 #         1000 + 1001 + 1002 + 1010 + 1011 + 1020 + 1100 + 1101 + 1110 + 1200 + 2000 = 12555
 require 'minitest/autorun'
 
-def generate_every_four_digit_sequence(n)
-  number_of_digits = number_of_digits(n)
-  return [n] if number_of_digits == 4
+class Integer
+  def four_digit_sequences
+    digits = number_of_digits(self)
+    return [self] if digits == 4
 
-  Enumerator.new do |enum|
-    curr_dig = number_of_digits.dup
-    while curr_dig >= 4
-      enum.yield (n % (10**curr_dig))/10**(curr_dig-4)
-      curr_dig -= 1
+    Enumerator.new do |enum|
+      while digits >= 4
+        enum.yield (self % (10**digits))/10**(digits-4)
+        digits -= 1
+      end
     end
   end
-end
 
-def number_of_digits(n)
-  return 1 if n < 10
-  1 + number_of_digits(n/10)
+private
+  def number_of_digits(value)
+    return 1 if value < 10
+    1 + number_of_digits(value/10)
+  end
 end
 
 def closest_to_mean(array)
@@ -65,7 +67,7 @@ end
 
 def max_sum_dig(range_max, max_digits_sum)
   valid_numbers = (1000..range_max).select do |n|
-    generate_every_four_digit_sequence(n).all? { |n| sum_digits(n) <= max_digits_sum }
+    n.four_digit_sequences.all? { |seq| sum_digits(seq) <= max_digits_sum }
   end
   [valid_numbers.size, closest_to_mean(valid_numbers), valid_numbers.sum]
 end
