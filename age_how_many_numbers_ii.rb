@@ -13,7 +13,8 @@
 #   [(1), (2), (3)]
 
 # (1) - the amount of numbers that satisfy the constraint presented above
-# (2) - the closest number to the mean of the results, if there are more than one, the smallest number should be chosen.
+# (2) - the closest number to the mean of the results, if there are more than one, the smallest
+#       number should be chosen.
 # (3) - the total sum of all the found numbers
 
 # Example
@@ -67,6 +68,13 @@ class Test < Minitest::Test
     assert_equal(
       [35, 2000, 58331],
       max_sum_dig(4000, 4)
+    )
+  end
+
+  def test_6
+    assert_equal(
+      [2538, 20000, 50663941],
+      max_sum_dig(50000, 9)
     )
   end
 end
