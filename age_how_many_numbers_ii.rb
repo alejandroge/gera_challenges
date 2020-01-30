@@ -44,32 +44,38 @@ class Integer
     end
   end
 
+  def digits_sum
+    _digits_sum(self.dup)
+  end
+
 private
   def number_of_digits(value)
     return 1 if value < 10
     1 + number_of_digits(value/10)
   end
-end
 
-def closest_to_mean(array)
-  mean = (array.sum*1.0)/array.length
-  index = array.find_index { |n| n > mean }
-
-  diff_to_low = (array[index-1] - mean).abs
-  diff_to_high = (array[index] - mean).abs
-  diff_to_high < diff_to_low ? array[index] : array[index - 1]
-end
-
-def sum_digits(n)
-  return n if n < 10
-  (n % 10) + sum_digits(n / 10)
-end
-
-def max_sum_dig(range_max, max_digits_sum)
-  valid_numbers = (1000..range_max).select do |n|
-    n.four_digit_sequences.all? { |seq| sum_digits(seq) <= max_digits_sum }
+  def _digits_sum(n)
+    return n if n < 10
+    (n % 10) + _digits_sum(n / 10)
   end
-  [valid_numbers.size, closest_to_mean(valid_numbers), valid_numbers.sum]
+end
+
+class Array
+  def closest_value_to_mean
+    mean = self.sum.to_f / self.length
+    index = self.find_index { |n| n > mean }
+
+    diff_to_low = (self[index-1] - mean).abs
+    diff_to_high = (self[index] - mean).abs
+    diff_to_high < diff_to_low ? self[index] : self[index - 1]
+  end
+end
+
+def max_sum_dig(max_num, digits_sum)
+  valid_numbers = (1000..max_num).select do |n|
+    n.four_digit_sequences.all? { |seq| seq.digits_sum <= digits_sum }
+  end
+  [valid_numbers.length, valid_numbers.closest_value_to_mean, valid_numbers.sum]
 end
 
 class Test < Minitest::Test
