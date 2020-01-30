@@ -120,4 +120,18 @@ class Test < Minitest::Test
       max_sum_dig(50000, 9)
     )
   end
+
+  def test_7
+    assert_equal(
+      [496, 2700, 1384912],
+      max_sum_dig(10000, 9)
+    )
+  end
+
+  def test_8
+    assert_equal(
+      [495, 2700, 1374912],
+      max_sum_dig(9999, 9)
+    )
+  end
 end
